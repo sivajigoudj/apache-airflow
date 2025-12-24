@@ -1,0 +1,12 @@
+apiVersion: v1
+data:
+  test_dag.py: "from airflow import DAG\r\nfrom airflow.operators.bash import BashOperator\r\nfrom
+    datetime import datetime\r\n\r\nwith DAG(\r\n    dag_id=\"simple_test_dag\",\r\n
+    \   start_date=datetime(2024, 1, 1),\r\n    schedule_interval=\"@once\",\r\n    catchup=False,\r\n)
+    as dag:\r\n\r\n    hello = BashOperator(\r\n        task_id=\"hello_world\",\r\n
+    \       bash_command=\"echo Hello from ConfigMap DAG\",\r\n    )\r\n"
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: airflow-dags
+  namespace: airflow

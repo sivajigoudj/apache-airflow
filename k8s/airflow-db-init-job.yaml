@@ -1,0 +1,27 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: airflow-db-init
+  namespace: airflow
+spec:
+  backoffLimit: 3
+  template:
+    spec:
+      imagePullSecrets:
+        - name: dockerhub-secret
+      restartPolicy: OnFailure
+      containers:
+        - name: airflow-db-init
+          image: sivaji9412/airflow-custom:1.0
+          command: ["airflow", "db", "migrate"]
+          envFrom:
+            - configMapRef:
+                name: airflow-env
+          volumeMounts:
+            - name: airflow-config
+              mountPath: /opt/airflow/airflow.cfg
+              subPath: airflow.cfg
+      volumes:
+        - name: airflow-config
+          configMap:
+            name: airflow-config

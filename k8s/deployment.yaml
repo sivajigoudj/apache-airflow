@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: airflow-webserver
+  namespace: airflow
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: airflow-webserver
+  template:
+    metadata:
+      labels:
+        app: airflow-webserver
+    spec:
+      imagePullSecrets:
+        - name: dockerhub-secret
+
+      # 🔹 INIT CONTAINER (COPY DAGs - SYMLINK SAFE)
+      initContainers:
+        - name: copy-dags
+          image: busybox
+          command:
+            - sh
+            - -c
+            - |
+              echo "Copying DAGs with symlink dereference..."
+              ls -la /dags-src
+              find /dags-src -type f -name "*.py" -exec cp {} /opt/airflow/dags/ \;
+              echo "Final DAG directory:"
+              ls -la /opt/airflow/dags
+          volumeMounts:
+            - name: dags-config
+              mountPath: /dags-src
+            - name: dags
+              mountPath: /opt/airflow/dags
+
+      containers:
+        - name: airflow-webserver
+          image: sivaji9412/airflow-custom:1.0
+          imagePullPolicy: IfNotPresent
+          command: ["airflow", "webserver"]
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: airflow-env
+          volumeMounts:
+            - name: airflow-config
+              mountPath: /opt/airflow/airflow.cfg
+              subPath: airflow.cfg
+            - name: dags
+              mountPath: /opt/airflow/dags
+
+      volumes:
+        - name: airflow-config
+          configMap:
+            name: airflow-config
+
+        - name: dags-config
+          configMap:
+            name: airflow-dags
+
+        - name: dags
+          emptyDir: {}
