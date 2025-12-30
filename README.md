@@ -1,6 +1,3 @@
-Perfect 👍
-Below is a **professional, interview-ready `README.md`** you can **directly copy-paste** into your GitHub repo.
-
 ---
 
 # Apache Airflow on Kubernetes with Prometheus & Grafana
@@ -175,14 +172,6 @@ http://localhost:3000
 * Kustomize-based configuration management
 * Production-style Kubernetes layout
 
----
-
-## 🎯 Interview-Ready Summary
-
-> *“I deployed Apache Airflow on Kubernetes using pure YAML and Kustomize, configured PostgreSQL as the metadata database, and integrated Prometheus and Grafana using StatsD for monitoring.”*
-
----
-
 ## 🔮 Future Enhancements
 
 * Add Prometheus alert rules
@@ -196,16 +185,7 @@ http://localhost:3000
 ## 👤 Author
 
 **Sivaji Goud**
-Aspiring Platform / DevOps Engineer
+DevOps Engineer
 GitHub: [https://github.com/sivajigoudj](https://github.com/sivajigoudj)
 
 ---
-
-If you want, next I can:
-
-* ✅ Add **architecture diagram image**
-* ✅ Write **resume bullet points**
-* ✅ Prepare **interview Q&A from this repo**
-* ✅ Optimize it for **production standards**
-
-Just tell me 👍
