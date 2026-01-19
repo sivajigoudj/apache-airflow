@@ -30,18 +30,35 @@ spec:
               mountPath: /opt/airflow/dags
 
       containers:
+        # 🔹 AIRFLOW SCHEDULER
         - name: airflow-scheduler
           image: sivaji9412/airflow-custom:1.0
+          imagePullPolicy: IfNotPresent
           command: ["airflow", "scheduler"]
 
+          envFrom:
+            - configMapRef:
+                name: airflow-env
+
           volumeMounts:
-            - name: airflow-config          # ✅ MUST exist
+            - name: airflow-config
               mountPath: /opt/airflow/airflow.cfg
               subPath: airflow.cfg
             - name: dags
               mountPath: /opt/airflow/dags
 
-      volumes:                              # ✅ SAME LEVEL
+        # 🔹 STATSD EXPORTER SIDECAR
+        - name: statsd-exporter
+          image: prom/statsd-exporter:v0.28.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: metrics
+              containerPort: 9102
+            - name: statsd
+              containerPort: 8125
+              protocol: UDP
+
+      volumes:
         - name: airflow-config
           configMap:
             name: airflow-config

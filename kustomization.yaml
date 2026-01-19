@@ -4,24 +4,27 @@ kind: Kustomization
 namespace: airflow
 
 resources:
-  - postgres-secret.yaml
-  - postgres-deployment.yaml
-  - postgres-service.yaml
-  - airflow-db-init-job.yaml
-  - deployment.yaml
-  - scheduler-deployment.yaml
-  - service.yaml
-  - networkpolicy.yaml
-  - poddisruptionbudget.yaml
+  - database/postgres-secret.yaml
+  - database/postgres-deployment.yaml
+  - database/postgres-service.yaml
+
+  - airflow/airflow-dags-configmap.yaml
+  - airflow/airflow-db-init-job.yaml
+  - airflow/deployment.yaml
+  - airflow/scheduler-deployment.yaml
+  - airflow/service.yaml
+
+  - platform/networkpolicy.yaml
+  - platform/poddisruptionbudget.yaml
 
 configMapGenerator:
   - name: airflow-config
     files:
-      - airflow.cfg
+      - airflow/airflow.cfg
 
   - name: airflow-env
     envs:
-      - env.properties
+      - airflow/env.properties
 
 generatorOptions:
   disableNameSuffixHash: true
