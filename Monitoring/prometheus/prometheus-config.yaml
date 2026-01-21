@@ -12,4 +12,4 @@ data:
       - job_name: "airflow-statsd"
         static_configs:
           - targets:
-              - airflow-statsd.airflow.svc.cluster.local:9102
+              - airflow-webserver.airflow.svc.cluster.local:9102

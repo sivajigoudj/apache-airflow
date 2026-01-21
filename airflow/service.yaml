@@ -4,9 +4,15 @@ metadata:
   name: airflow-webserver
   namespace: airflow
 spec:
-  type: LoadBalancer
   selector:
     app: airflow-webserver
   ports:
-    - port: 80
+    - name: web
+      port: 80
       targetPort: 8080
+      protocol: TCP
+
+    - name: statsd-metrics
+      port: 9102
+      targetPort: 9102
+      protocol: TCP

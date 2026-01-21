@@ -49,7 +49,7 @@ spec:
 
         # 🔹 STATSD EXPORTER SIDECAR
         - name: statsd-exporter
-          image: prom/statsd-exporter:v0.28.0
+          image: sivaji9412/statsd-exporter:0.28.0
           imagePullPolicy: IfNotPresent
           ports:
             - name: metrics

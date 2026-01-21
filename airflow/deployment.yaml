@@ -50,9 +50,9 @@ spec:
             - name: dags
               mountPath: /opt/airflow/dags
 
-        # 🔹 STATSD EXPORTER SIDECAR
+        # 🔹 STATSD EXPORTER SIDECAR (CUSTOM IMAGE)
         - name: statsd-exporter
-          image: prom/statsd-exporter:v0.28.0
+          image: sivaji9412/statsd-exporter:0.28.0
           imagePullPolicy: IfNotPresent
           ports:
             - name: metrics
