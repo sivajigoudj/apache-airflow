@@ -11,8 +11,3 @@ spec:
       port: 80
       targetPort: 8080
       protocol: TCP
-
-    - name: statsd-metrics
-      port: 9102
-      targetPort: 9102
-      protocol: TCP

@@ -6,4 +6,11 @@ metadata:
 data:
   AIRFLOW__CORE__EXECUTOR: LocalExecutor
   AIRFLOW__CORE__LOAD_EXAMPLES: "False"
-  AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
+  AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres.airflow.svc.cluster.local:5432/airflow
+
+  # 🔹 STATSD (FINAL & CORRECT)
+  AIRFLOW__METRICS__STATSD_ON: "True"
+  AIRFLOW__METRICS__STATSD_HOST: "localhost"
+  AIRFLOW__METRICS__STATSD_PORT: "8125"
+  AIRFLOW__METRICS__STATSD_PREFIX: "airflow"
+  AIRFLOW__METRICS__METRICS_ALLOW_LIST: "airflow.*"
