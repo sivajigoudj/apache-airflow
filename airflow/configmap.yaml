@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: airflow-config
+  namespace: airflow
+data:
+  # --- StatsD ---
+  AIRFLOW__METRICS__STATSD_ON: "True"
+  AIRFLOW__METRICS__STATSD_HOST: "127.0.0.1"
+  AIRFLOW__METRICS__STATSD_PORT: "8125"
+  AIRFLOW__METRICS__STATSD_PREFIX: "airflow"
+
+  # --- Core ---
+  AIRFLOW__CORE__EXECUTOR: LocalExecutor
+  AIRFLOW__CORE__LOAD_EXAMPLES: "False"
+  AIRFLOW__CORE__PARALLELISM: "32"
+  AIRFLOW__CORE__MAX_ACTIVE_TASKS_PER_DAG: "16"
+  AIRFLOW__CORE__MAX_ACTIVE_RUNS_PER_DAG: "2"
+
+  AIRFLOW__SCHEDULER__SCHEDULER_HEARTBEAT_SEC: "5"

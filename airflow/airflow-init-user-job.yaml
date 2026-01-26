@@ -1,0 +1,27 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: airflow-create-admin
+  namespace: airflow
+spec:
+  backoffLimit: 3
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+      - name: create-admin
+        image: sivaji9412/airflow-local:2.0
+        envFrom:
+        - secretRef:
+            name: airflow-secrets
+        command: ["/bin/bash","-c"]
+        args:
+          - |
+            airflow db init || true
+            airflow users create \
+              --username "$AIRFLOW_ADMIN_USERNAME" \
+              --password "$AIRFLOW_ADMIN_PASSWORD" \
+              --firstname "$AIRFLOW_ADMIN_FIRSTNAME" \
+              --lastname "$AIRFLOW_ADMIN_LASTNAME" \
+              --role Admin \
+              --email "$AIRFLOW_ADMIN_EMAIL" || true

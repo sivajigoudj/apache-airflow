@@ -1,13 +1,25 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: airflow-webserver
+  name: airflow
   namespace: airflow
 spec:
   selector:
-    app: airflow-webserver
+    app: airflow
   ports:
-    - name: web
-      port: 80
-      targetPort: 8080
-      protocol: TCP
+  - name: web
+    port: 8080
+    targetPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: airflow-statsd
+  namespace: airflow
+spec:
+  selector:
+    app: airflow
+  ports:
+  - name: metrics
+    port: 9102
+    targetPort: 9102

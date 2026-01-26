@@ -13,78 +13,48 @@ spec:
       labels:
         app: airflow
     spec:
-
-      initContainers:
-        - name: copy-dags
-          image: busybox
-          command:
-            - sh
-            - -c
-            - |
-              echo "Copying DAGs..."
-              find /dags-src -type f -name "*.py" -exec cp {} /opt/airflow/dags/ \;
-          volumeMounts:
-            - name: dags-config
-              mountPath: /dags-src
-            - name: dags
-              mountPath: /opt/airflow/dags
-
       containers:
-        # 🔹 AIRFLOW SCHEDULER
-        - name: airflow-scheduler
-          image: sivaji9412/airflow-custom:1.4
-          command: ["airflow", "scheduler"]
-          envFrom:
-            - configMapRef:
-                name: airflow-env
-          volumeMounts:
-            - name: airflow-config
-              mountPath: /opt/airflow/airflow.cfg
-              subPath: airflow.cfg
-            - name: dags
-              mountPath: /opt/airflow/dags
 
-        # 🔹 AIRFLOW WEBSERVER
-        - name: airflow-webserver
-          image: sivaji9412/airflow-custom:1.4
-          command: ["airflow", "webserver"]
-          ports:
-            - containerPort: 8080
-          envFrom:
-            - configMapRef:
-                name: airflow-env
-          volumeMounts:
-            - name: airflow-config
-              mountPath: /opt/airflow/airflow.cfg
-              subPath: airflow.cfg
-            - name: dags
-              mountPath: /opt/airflow/dags
+      # 🔹 Airflow container (scheduler + webserver)
+      - name: airflow
+        image: sivaji9412/airflow-local:2.0
+        ports:
+        - containerPort: 8080
+        envFrom:
+        - configMapRef:
+            name: airflow-config
+        - secretRef:
+            name: airflow-secrets
+        volumeMounts:
+        - name: airflow-data
+          mountPath: /opt/airflow/dags
+          subPath: dags
+        - name: airflow-data
+          mountPath: /opt/airflow/logs
+          subPath: logs
+        command: ["/bin/bash", "-c"]
+        args:
+          - |
+            echo "Starting Airflow DB init"
+            airflow db init || true
 
-        # 🔹 STATSD EXPORTER
-        - name: statsd-exporter
-          image: sivaji9412/statsd-exporter:0.28.0
-          args:
-            - "--statsd.listen-udp=:8125"
-            - "--statsd.mapping-config=/etc/statsd/mapping.yaml"
-          ports:
-            - name: metrics
-              containerPort: 9102
-            - name: statsd
-              containerPort: 8125
-              protocol: UDP
-          volumeMounts:
-            - name: statsd-mapping
-              mountPath: /etc/statsd
+            echo "Starting Airflow Scheduler"
+            airflow scheduler &
+
+            echo "Starting Airflow Webserver"
+            exec airflow webserver
+
+      # 🔹 StatsD sidecar container
+      - name: statsd
+        image: prom/statsd-exporter:v0.28.0
+        args:
+          - "--statsd.listen-udp=:8125"
+        ports:
+        - containerPort: 8125
+          protocol: UDP
+        - containerPort: 9102
 
       volumes:
-        - name: airflow-config
-          configMap:
-            name: airflow-config
-        - name: dags-config
-          configMap:
-            name: airflow-dags
-        - name: dags
-          emptyDir: {}
-        - name: statsd-mapping
-          configMap:
-            name: statsd-mapping
+      - name: airflow-data
+        persistentVolumeClaim:
+          claimName: airflow-pvc
